@@ -1,7 +1,7 @@
 package resolver
 
 import (
-	"blocky/util"
+	"github.com/stgnet/blocky/util"
 	"fmt"
 	"net"
 	"strings"

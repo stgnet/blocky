@@ -1,8 +1,8 @@
 package resolver
 
 import (
-	"blocky/config"
-	"blocky/metrics"
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/metrics"
 	"fmt"
 	"strings"
 	"time"

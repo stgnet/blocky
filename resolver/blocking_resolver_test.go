@@ -1,11 +1,11 @@
 package resolver
 
 import (
-	"blocky/api"
-	"blocky/config"
-	. "blocky/helpertest"
-	"blocky/metrics"
-	"blocky/util"
+	"github.com/stgnet/blocky/api"
+	"github.com/stgnet/blocky/config"
+	. "github.com/stgnet/blocky/helpertest"
+	"github.com/stgnet/blocky/metrics"
+	"github.com/stgnet/blocky/util"
 
 	"encoding/json"
 	"net/http"

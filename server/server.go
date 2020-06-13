@@ -1,15 +1,15 @@
 package server
 
 import (
-	"blocky/config"
-	"blocky/metrics"
-	"blocky/resolver"
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/metrics"
+	"github.com/stgnet/blocky/resolver"
 	"net/http"
 	"runtime"
 	"runtime/debug"
 	"time"
 
-	"blocky/util"
+	"github.com/stgnet/blocky/util"
 	"fmt"
 	"net"
 

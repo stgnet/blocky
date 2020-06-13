@@ -1,8 +1,8 @@
 package resolver
 
 import (
-	"blocky/config"
-	. "blocky/helpertest"
+	"github.com/stgnet/blocky/config"
+	. "github.com/stgnet/blocky/helpertest"
 
 	"net"
 

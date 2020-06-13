@@ -1,11 +1,11 @@
 package server
 
 import (
-	"blocky/api"
-	"blocky/config"
-	. "blocky/helpertest"
-	"blocky/resolver"
-	"blocky/util"
+	"github.com/stgnet/blocky/api"
+	"github.com/stgnet/blocky/config"
+	. "github.com/stgnet/blocky/helpertest"
+	"github.com/stgnet/blocky/resolver"
+	"github.com/stgnet/blocky/util"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"

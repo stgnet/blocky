@@ -1,4 +1,4 @@
-module blocky
+module github.com/stgnet/blocky
 
 go 1.14
 

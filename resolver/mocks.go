@@ -1,7 +1,7 @@
 package resolver
 
 import (
-	"blocky/config"
+	"github.com/stgnet/blocky/config"
 	"io/ioutil"
 	"net"
 	"net/http"

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"blocky/config"
-	"blocky/server"
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/server"
 	"context"
 	"fmt"
 	"net"

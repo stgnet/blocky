@@ -1,7 +1,7 @@
 package main
 
 import (
-	"blocky/cmd"
+	"github.com/stgnet/blocky/cmd"
 	"os"
 )
 
