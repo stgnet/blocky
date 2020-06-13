@@ -1,7 +1,7 @@
 package resolver
 
 import (
-	"blocky/config"
+	"github.com/stgnet/blocky/config"
 
 	"github.com/go-chi/chi"
 	. "github.com/onsi/ginkgo"

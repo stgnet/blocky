@@ -1,7 +1,7 @@
 package resolver
 
 import (
-	"blocky/util"
+	"github.com/stgnet/blocky/util"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

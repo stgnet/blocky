@@ -1,9 +1,9 @@
 package lists
 
 import (
-	"blocky/config"
-	. "blocky/helpertest"
-	"blocky/metrics"
+	"github.com/stgnet/blocky/config"
+	. "github.com/stgnet/blocky/helpertest"
+	"github.com/stgnet/blocky/metrics"
 	"net/http"
 	"sync/atomic"
 	"time"

@@ -1,7 +1,7 @@
 package stats
 
 import (
-	"blocky/util"
+	"github.com/stgnet/blocky/util"
 	"strings"
 	"sync"
 	"time"

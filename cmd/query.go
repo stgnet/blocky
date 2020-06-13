@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"blocky/api"
+	"github.com/stgnet/blocky/api"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"

@@ -1,9 +1,9 @@
 package resolver
 
 import (
-	"blocky/config"
+	"github.com/stgnet/blocky/config"
 	"blocky/metrics"
-	"blocky/util"
+	"github.com/stgnet/blocky/util"
 	"fmt"
 	"time"
 

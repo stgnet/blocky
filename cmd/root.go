@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"blocky/config"
+	"github.com/stgnet/blocky/config"
 	"fmt"
 	"os"
 

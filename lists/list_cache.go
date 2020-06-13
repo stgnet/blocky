@@ -1,7 +1,7 @@
 package lists
 
 import (
-	"blocky/metrics"
+	"github.com/stgnet/blocky/metrics"
 	"bufio"
 	"fmt"
 	"io"

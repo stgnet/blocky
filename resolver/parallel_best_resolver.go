@@ -1,8 +1,8 @@
 package resolver
 
 import (
-	"blocky/config"
-	"blocky/util"
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/util"
 	"fmt"
 	"math"
 	"strings"

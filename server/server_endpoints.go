@@ -1,11 +1,12 @@
 package server
 
 import (
-	"blocky/api"
-	"blocky/config"
+	"github.com/stgnet/blocky/api"
+	"github.com/stgnet/blocky/config"
 	"blocky/resolver"
-	"blocky/util"
-	"blocky/web"
+	"github.com/stgnet/blocky/docs"
+	"github.com/stgnet/blocky/util"
+	"github.com/stgnet/blocky/web"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
