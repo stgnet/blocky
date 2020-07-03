@@ -36,7 +36,17 @@ clientLookup:
   singleNameOrder:
       - 2
       - 1
-  
+cname:
+  groups:
+    youtube:
+      domains:
+        - youtube.com
+        - other.youtube.com
+      cname: restrict.youtube.com
+  clientGroupsBlock:
+    default:
+    192.168.2.1:
+      - youtube
 queryLog:
   dir: /opt/log
   perClient: true

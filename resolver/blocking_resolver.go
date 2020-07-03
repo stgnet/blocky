@@ -1,11 +1,6 @@
 package resolver
 
 import (
-	"github.com/stgnet/blocky/api"
-	"github.com/stgnet/blocky/config"
-	"github.com/stgnet/blocky/lists"
-	"github.com/stgnet/blocky/metrics"
-	"github.com/stgnet/blocky/util"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -15,6 +10,12 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/stgnet/blocky/api"
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/lists"
+	"github.com/stgnet/blocky/metrics"
+	"github.com/stgnet/blocky/util"
 
 	"github.com/go-chi/chi"
 	"github.com/miekg/dns"
