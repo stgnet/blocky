@@ -37,6 +37,14 @@ var _ = Describe("Config", func() {
 
 				Expect(cfg.Caching.MaxCachingTime).Should(Equal(0))
 				Expect(cfg.Caching.MinCachingTime).Should(Equal(0))
+
+				Expect(len(cfg.Cname.Groups)).Should(Equal(1))
+				Expect(len(cfg.Cname.Groups["youtube"].Domains)).Should(Equal(2))
+				Expect(cfg.Cname.Groups["youtube"].Cname).Should(Equal("restrict.youtube.com"))
+				// Assume one default block
+				Expect(len(cfg.Cname.ClientGroupsBlock)).Should(Equal(2))
+				Expect(len(cfg.Cname.ClientGroupsBlock["192.168.2.1"])).Should(Equal(1))
+				Expect(cfg.Cname.ClientGroupsBlock["192.168.2.1"][0]).Should(Equal("youtube"))
 			})
 		})
 		When("config file is malformed", func() {
