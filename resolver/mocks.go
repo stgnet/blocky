@@ -1,13 +1,14 @@
 package resolver
 
 import (
-	"github.com/stgnet/blocky/config"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
+
+	"github.com/stgnet/blocky/config"
 
 	"github.com/miekg/dns"
 	log "github.com/sirupsen/logrus"

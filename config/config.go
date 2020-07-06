@@ -127,6 +127,16 @@ type Config struct {
 	CertFile     string                    `yaml:"httpsCertFile"`
 	KeyFile      string                    `yaml:"httpsKeyFile"`
 	BootstrapDNS Upstream                  `yaml:"bootstrapDns"`
+	Cname        CnameConfig               `yaml:"cname"`
+}
+
+type Groups struct {
+	Domains []string `yaml:"domains"`
+	Cname   string   `yaml:"cname"`
+}
+type CnameConfig struct {
+	Groups            map[string]Groups   `yaml:"groups"`
+	ClientGroupsBlock map[string][]string `yaml:"clientGroupsBlock"`
 }
 
 // PrometheusConfig contains the config values for prometheus

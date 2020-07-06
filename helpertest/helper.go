@@ -81,6 +81,8 @@ func (matcher *dnsRecordMatcher) matchSingle(rr dns.RR) (success bool, err error
 		return v.Ptr == matcher.answer, nil
 	case *dns.MX:
 		return v.Mx == matcher.answer, nil
+	case *dns.CNAME:
+		return v.Target == matcher.answer, nil
 	}
 
 	return false, nil
