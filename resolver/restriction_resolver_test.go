@@ -38,7 +38,7 @@ var _ = Describe("RestrictionResolver", func() {
 	Describe("Resolving a restricted domain", func() {
 		When("A domain restriction is defined for a domain", func() {
 			It("should respond with the restricted CNAME", func() {
-				resp, err = sut.Resolve(newRequest("other.youtube.com", dns.TypeA))
+				resp, err = sut.Resolve(newRequestWithClient("other.youtube.com", dns.TypeA, "1.2.1.2", "192.168.2.1"))
 
 				Expect(resp.Res.Rcode).Should(Equal(dns.RcodeSuccess))
 				Expect(resp.Res.Answer).Should(BeDNSRecord("other.youtube.com", dns.TypeA, 3600, "restrict.youtube.com"))

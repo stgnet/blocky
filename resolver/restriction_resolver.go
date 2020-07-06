@@ -38,39 +38,44 @@ func (rr *RestrictionResolver) Configuration() (result []string) {
 	return
 }
 
-// Resolve ...
+// Resolve requested domain and looks if it's part of any restriction
 func (rr *RestrictionResolver) Resolve(req *Request) (*Response, error) {
 	logger := withPrefix(req.Log, "restriction_resolver")
 
 	for _, question := range req.Req.Question {
 		domain := util.ExtractDomain(question)
 		groups := rr.groupsToCheckForClient(req)
+		if len(groups) <= 0 {
+			continue
+		}
 
 		for len(domain) > 0 {
-			for _, v := range groups {
-				if v == domain {
-					response := new(dns.Msg)
-					response.SetReply(req.Req)
+			for _, g := range groups {
+				for _, d := range rr.cfg.Groups[g].Domains {
+					if d == domain {
+						response := new(dns.Msg)
+						response.SetReply(req.Req)
 
-					dnsCnameReq := new(dns.CNAME)
-					h := dns.RR_Header{Name: question.Name, Rrtype: question.Qtype, Class: dns.ClassINET, Ttl: customDNSTTL}
+						dnsCnameReq := new(dns.CNAME)
+						h := dns.RR_Header{Name: question.Name, Rrtype: question.Qtype, Class: dns.ClassINET, Ttl: customDNSTTL}
 
-					dnsCnameReq.Target = rr.cfg.Groups[v].Cname
-					dnsCnameReq.Hdr = h
+						dnsCnameReq.Target = rr.cfg.Groups[g].Cname
+						dnsCnameReq.Hdr = h
 
-					response.Answer = append(response.Answer, dnsCnameReq)
+						response.Answer = append(response.Answer, dnsCnameReq)
 
-					logger.WithFields(logrus.Fields{
-						"answer": util.AnswerToString(response.Answer),
-						"domain": domain,
-					}).Debugf("returning custom dns entry")
+						logger.WithFields(logrus.Fields{
+							"answer": util.AnswerToString(response.Answer),
+							"domain": domain,
+						}).Debugf("returning restricted dns entry")
 
-					return &Response{Res: response, RType: CUSTOMDNS, Reason: "CUSTOM DNS"}, nil
+						return &Response{Res: response, RType: CUSTOMDNS, Reason: "RESTRICTED DNS"}, nil
+					}
 				}
 			}
 		}
 	}
-	return nil, nil
+	return rr.next.Resolve(req)
 }
 
 func (rr *RestrictionResolver) groupsToCheckForClient(request *Request) (groups []string) {
