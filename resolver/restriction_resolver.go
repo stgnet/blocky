@@ -30,6 +30,7 @@ func (rr *RestrictionResolver) Configuration() (result []string) {
 			result = append(result, fmt.Sprintf("domain %s", v))
 		}
 	}
+
 	for key, val := range rr.cfg.ClientGroupsBlock {
 		result = append(result, fmt.Sprintf("  %s = \"%s\"", key, strings.Join(val, ";")))
 	}
@@ -58,6 +59,7 @@ func (rr *RestrictionResolver) Resolve(req *Request) (*Response, error) {
 					dnsCnameReq.Hdr = h
 
 					response.Answer = append(response.Answer, dnsCnameReq)
+
 					logger.WithFields(logrus.Fields{
 						"answer": util.AnswerToString(response.Answer),
 						"domain": domain,
@@ -65,12 +67,9 @@ func (rr *RestrictionResolver) Resolve(req *Request) (*Response, error) {
 
 					return &Response{Res: response, RType: CUSTOMDNS, Reason: "CUSTOM DNS"}, nil
 				}
-
 			}
-
 		}
 	}
-
 	return nil, nil
 }
 
