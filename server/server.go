@@ -1,18 +1,20 @@
 package server
 
 import (
-	"github.com/stgnet/blocky/config"
-	"github.com/stgnet/blocky/metrics"
-	"github.com/stgnet/blocky/resolver"
 	"net/http"
 	"runtime"
 	"runtime/debug"
 	"strings"
 	"time"
 
-	"github.com/stgnet/blocky/util"
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/metrics"
+	"github.com/stgnet/blocky/resolver"
+
 	"fmt"
 	"net"
+
+	"github.com/stgnet/blocky/util"
 
 	"github.com/go-chi/chi"
 	"github.com/miekg/dns"
@@ -134,6 +136,7 @@ func createQueryResolver(cfg *config.Config, router *chi.Mux) resolver.Resolver 
 		resolver.NewBlockingResolver(router, cfg.Blocking),
 		resolver.NewCachingResolver(cfg.Caching),
 		resolver.NewParallelBestResolver(cfg.Upstream.ExternalResolvers),
+		resolver.NewCnameResolver(cfg.Cname),
 	)
 }
 
