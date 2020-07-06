@@ -1,11 +1,12 @@
 package resolver
 
 import (
+	"strings"
+	"time"
+
 	"github.com/stgnet/blocky/config"
 	. "github.com/stgnet/blocky/helpertest"
 	"github.com/stgnet/blocky/util"
-	"strings"
-	"time"
 
 	"github.com/miekg/dns"
 	. "github.com/onsi/ginkgo"

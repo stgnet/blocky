@@ -1,8 +1,9 @@
 package resolver
 
 import (
-	"github.com/stgnet/blocky/config"
 	"errors"
+
+	"github.com/stgnet/blocky/config"
 
 	"github.com/miekg/dns"
 	. "github.com/onsi/ginkgo"

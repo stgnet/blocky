@@ -1,8 +1,6 @@
 package resolver
 
 import (
-	"github.com/stgnet/blocky/config"
-	"github.com/stgnet/blocky/util"
 	"bufio"
 	"encoding/csv"
 	"fmt"
@@ -11,6 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/stgnet/blocky/config"
+	"github.com/stgnet/blocky/util"
 
 	"github.com/miekg/dns"
 	. "github.com/onsi/ginkgo"
