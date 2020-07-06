@@ -11,18 +11,18 @@ import (
 	"github.com/stgnet/blocky/util"
 )
 
-type RestrictionResolver struct {
+type CnameResolver struct {
 	NextResolver
 	cfg config.CnameConfig
 }
 
-// NewRestrictionResolver resturns a new restriction resolver
-func NewRestrictionResolver(cfg config.CnameConfig) ChainedResolver {
-	return &RestrictionResolver{cfg: cfg}
+// NewCnameResolver resturns a new restriction resolver
+func NewCnameResolver(cfg config.CnameConfig) ChainedResolver {
+	return &CnameResolver{cfg: cfg}
 }
 
 // Configuration returns the string representation of the configuration
-func (rr *RestrictionResolver) Configuration() (result []string) {
+func (rr *CnameResolver) Configuration() (result []string) {
 
 	for k, val := range rr.cfg.Groups {
 		result = append(result, fmt.Sprintf("group %s redirects to %s", k, val.Cname))
@@ -39,8 +39,8 @@ func (rr *RestrictionResolver) Configuration() (result []string) {
 }
 
 // Resolve requested domain and looks if it's part of any restriction
-func (rr *RestrictionResolver) Resolve(req *Request) (*Response, error) {
-	logger := withPrefix(req.Log, "restriction_resolver")
+func (rr *CnameResolver) Resolve(req *Request) (*Response, error) {
+	logger := withPrefix(req.Log, "cname_resolver")
 
 	for _, question := range req.Req.Question {
 		domain := util.ExtractDomain(question)
@@ -78,7 +78,7 @@ func (rr *RestrictionResolver) Resolve(req *Request) (*Response, error) {
 	return rr.next.Resolve(req)
 }
 
-func (rr *RestrictionResolver) groupsToCheckForClient(request *Request) (groups []string) {
+func (rr *CnameResolver) groupsToCheckForClient(request *Request) (groups []string) {
 	// try client names
 	for _, cName := range request.ClientNames {
 		groupsByName, found := rr.cfg.ClientGroupsBlock[cName]
@@ -87,12 +87,9 @@ func (rr *RestrictionResolver) groupsToCheckForClient(request *Request) (groups 
 		}
 	}
 
-	// if len(groups) == 0 {
-	// 	if !found {
-	// 		// return default
-	// 		groups = rr.cfg.ClientGroupsBlock["default"]
-	// 	}
-	// }
+	if len(groups) == 0 {
+		groups = rr.cfg.ClientGroupsBlock["default"]
+	}
 
 	sort.Strings(groups)
 

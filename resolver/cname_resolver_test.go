@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ = Describe("RestrictionResolver", func() {
+var _ = Describe("CnameResolver", func() {
 	var (
 		sut  ChainedResolver
 		m    *resolverMock
@@ -19,7 +19,7 @@ var _ = Describe("RestrictionResolver", func() {
 	)
 
 	BeforeEach(func() {
-		sut = NewRestrictionResolver(config.CnameConfig{
+		sut = NewCnameResolver(config.CnameConfig{
 			Groups: map[string]config.Groups{
 				"youtube": {
 					Domains: []string{"youtube.com", "other.youtube.com"},
