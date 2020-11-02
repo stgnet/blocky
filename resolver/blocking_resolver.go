@@ -239,6 +239,10 @@ func (r *BlockingResolver) Configuration() (result []string) {
 			result = append(result, fmt.Sprintf("  %s = \"%s\"", key, strings.Join(val, ";")))
 		}
 
+		for key, val := range r.cfg.Global {
+			result = append(result, fmt.Sprintf("  %s = \"%t\"", key, val))
+		}
+
 		result = append(result, fmt.Sprintf("blockType = \"%s\"", r.cfg.BlockType))
 
 		result = append(result, "blacklist:")
@@ -393,7 +397,12 @@ func (r *BlockingResolver) matches(groupsToCheck []string, m lists.Matcher,
 	domain string) (blocked bool, group string) {
 	if len(groupsToCheck) > 0 {
 		found, group := m.Match(domain, groupsToCheck)
-		if found {
+		global, ok := r.cfg.Global[domain]
+		if !ok {
+			global = found
+		}
+
+		if found && global {
 			return true, group
 		}
 	}
