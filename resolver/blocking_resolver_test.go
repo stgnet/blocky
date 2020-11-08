@@ -72,6 +72,83 @@ badcnamedomain.com`)
 		Expect(resp.Res.Rcode).Should(Equal(expectedReturnCode))
 	})
 
+	Describe("Global config", func() {
+		When("When global config adblock is set", func() {
+			BeforeEach(func() {
+				sutConfig = config.BlockingConfig{
+					BlackLists: map[string][]string{
+						"adblock": {defaultGroupFile.Name()},
+					},
+					ClientGroupsBlock: map[string][]string{
+						"1.2.1.2": {"adblock"},
+					},
+				}
+			})
+
+			It("Should block request if global adblock is on", func() {
+				sut.cfg.Global = map[string]bool{"adblock": true}
+				resp, err = sut.Resolve(newRequestWithClient("blocked3.com.", dns.TypeA, "1.2.1.2", "unknown"))
+
+				Expect(resp.Reason).Should(Equal("BLOCKED (adblock)"))
+			})
+
+			It("Should not block request not part of the list", func() {
+				sut.cfg.Global = map[string]bool{"adblock": true}
+				resp, err = sut.Resolve(newRequestWithClient("example.com.", dns.TypeA, "1.2.1.2", "unknown"))
+				// was delegated to next resolver
+				Expect(err).Should(Succeed())
+				Expect(resp.RType).Should(Equal(RESOLVED))
+
+				m.AssertExpectations(GinkgoT())
+				m.AssertNumberOfCalls(GinkgoT(), "Resolve", 1)
+
+			})
+		})
+		When("When global config adblock is false", func() {
+			It("Should not block request part of the list", func() {
+				sut.cfg.Global = map[string]bool{"adblock": false}
+				resp, err = sut.Resolve(newRequestWithClient("blocked3.com.", dns.TypeA, "1.2.1.2", "unknown"))
+				// was delegated to next resolver
+				Expect(err).Should(Succeed())
+				Expect(resp.RType).Should(Equal(RESOLVED))
+
+				m.AssertExpectations(GinkgoT())
+				m.AssertNumberOfCalls(GinkgoT(), "Resolve", 1)
+			})
+			It("Should not block request not part of the list", func() {
+				sut.cfg.Global = map[string]bool{"adblock": false}
+				resp, err = sut.Resolve(newRequestWithClient("example.com.", dns.TypeA, "1.2.1.2", "unknown"))
+				// was delegated to next resolver
+				Expect(err).Should(Succeed())
+				Expect(resp.RType).Should(Equal(RESOLVED))
+
+				m.AssertExpectations(GinkgoT())
+				m.AssertNumberOfCalls(GinkgoT(), "Resolve", 1)
+			})
+			It("Should not block request part of the list if global is nil", func() {
+				sut.cfg.Global = nil
+				resp, err = sut.Resolve(newRequestWithClient("blocked3.com.", dns.TypeA, "1.2.1.2", "unknown"))
+				// was delegated to next resolver
+				Expect(err).Should(Succeed())
+				Expect(resp.RType).Should(Equal(RESOLVED))
+
+				m.AssertExpectations(GinkgoT())
+				m.AssertNumberOfCalls(GinkgoT(), "Resolve", 1)
+			})
+			It("Should not block request part of the list if global is empty", func() {
+				sut.cfg.Global = map[string]bool{}
+				resp, err = sut.Resolve(newRequestWithClient("blocked3.com.", dns.TypeA, "1.2.1.2", "unknown"))
+				// was delegated to next resolver
+				Expect(err).Should(Succeed())
+				Expect(resp.RType).Should(Equal(RESOLVED))
+
+				m.AssertExpectations(GinkgoT())
+				m.AssertNumberOfCalls(GinkgoT(), "Resolve", 1)
+			})
+		})
+
+	})
+
 	Describe("Blocking requests", func() {
 		BeforeEach(func() {
 			sutConfig = config.BlockingConfig{
@@ -137,7 +214,6 @@ badcnamedomain.com`)
 				Expect(resp.Res.Answer).Should(BeDNSRecord("blocked3.com.", dns.TypeA, 21600, "0.0.0.0"))
 			})
 		})
-
 		When("BlockType is NxDomain", func() {
 			BeforeEach(func() {
 				sutConfig = config.BlockingConfig{
