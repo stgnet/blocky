@@ -49,7 +49,7 @@ func (rr *CnameResolver) Resolve(req *Request) (*Response, error) {
 			continue
 		}
 
-		for len(domain) > 0 {
+		if len(domain) > 0 {
 			for _, g := range groups {
 				for _, d := range rr.cfg.Groups[g].Domains {
 					if d == domain {
@@ -80,11 +80,9 @@ func (rr *CnameResolver) Resolve(req *Request) (*Response, error) {
 
 func (rr *CnameResolver) groupsToCheckForClient(request *Request) (groups []string) {
 	// try client names
-	for _, cName := range request.ClientNames {
-		groupsByName, found := rr.cfg.ClientGroupsBlock[cName]
-		if found {
-			groups = append(groups, groupsByName...)
-		}
+	groupsByName, found := rr.cfg.ClientGroupsBlock[request.ClientIP.String()]
+	if found {
+		groups = append(groups, groupsByName...)
 	}
 
 	if len(groups) == 0 {
