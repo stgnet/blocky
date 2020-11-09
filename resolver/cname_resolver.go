@@ -57,7 +57,12 @@ func (cr *CnameResolver) Resolve(req *Request) (*Response, error) {
 						response.SetReply(req.Req)
 
 						rr := new(dns.CNAME)
-						h := dns.RR_Header{Name: question.Name, Rrtype: question.Qtype, Class: dns.ClassINET, Ttl: customDNSTTL}
+						h := dns.RR_Header{
+							Name:   question.Name,
+							Rrtype: dns.TypeCNAME,
+							Class:  dns.ClassINET,
+							Ttl:    customDNSTTL,
+						}
 						rr.Target = cr.cfg.Groups[g].Cname
 						rr.Hdr = h
 
@@ -66,7 +71,7 @@ func (cr *CnameResolver) Resolve(req *Request) (*Response, error) {
 						logger.WithFields(logrus.Fields{
 							"answer": util.AnswerToString(response.Answer),
 							"domain": domain,
-						}).Debugf("returning restricted dns entry")
+						}).Debug("returning restricted dns entry")
 
 						return &Response{Res: response, RType: CUSTOMDNS, Reason: "RESTRICTED DNS"}, nil
 					}
