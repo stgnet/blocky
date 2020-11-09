@@ -239,6 +239,7 @@ func (r *BlockingResolver) Configuration() (result []string) {
 			result = append(result, fmt.Sprintf("  %s = \"%s\"", key, strings.Join(val, ";")))
 		}
 
+		result = append(result, "global:")
 		for key, val := range r.cfg.Global {
 			result = append(result, fmt.Sprintf("  %s = \"%t\"", key, val))
 		}
