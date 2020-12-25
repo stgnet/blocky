@@ -1,9 +1,9 @@
 package lists
 
 import (
-	"github.com/stgnet/blocky/metrics"
 	"bufio"
 	"fmt"
+	"github.com/stgnet/blocky/metrics"
 	"io"
 	"net"
 	"net/http"
@@ -286,7 +286,7 @@ func processFile(link string, ch chan<- []string, wg *sync.WaitGroup) {
 	}
 
 	if err != nil {
-		logger().Warn("error during file processing: ", err)
+		logger().Warn("error reading "+link+": ", err)
 
 		if errNet, ok := err.(net.Error); ok && (errNet.Timeout() || errNet.Temporary()) {
 			// put nil to indicate the temporary error
