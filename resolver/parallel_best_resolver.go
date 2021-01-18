@@ -119,7 +119,7 @@ func weightedRandom(in []*upstreamResolverStatus, exclude Resolver) *upstreamRes
 		}
 	}
 
-	c := weightedrand.NewChooser(choices...)
+	c, _ := weightedrand.NewChooser(choices...)
 
 	return c.Pick().(*upstreamResolverStatus)
 }
