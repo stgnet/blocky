@@ -1,12 +1,10 @@
 package resolver
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
+	"net"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,53 +14,21 @@ import (
 )
 
 func callExternal(msg *dns.Msg, upstreamURL string) (*dns.Msg, time.Duration, error) {
-	start := time.Now()
 
-	rawDNSMessage, err := msg.Pack()
-
-	if err != nil {
-		return nil, 0, fmt.Errorf("can't pack message: %v", err)
+	dnsClient := &dnsUpstreamClient{
+		client: &dns.Client{
+			Net:     "UDP",
+			Timeout: defaultTimeout,
+		},
 	}
+	return dnsClient.callExternal(msg, upstreamURL)
 
-	c := http.DefaultClient
-	c.Timeout = defaultTimeout
-	httpResponse, err := c.Post(upstreamURL, dnsContentType, bytes.NewReader(rawDNSMessage))
-
-	if err != nil {
-		return nil, 0, fmt.Errorf("can't perform https request: %v", err)
-	}
-	defer httpResponse.Body.Close()
-
-	if httpResponse.StatusCode != http.StatusOK {
-		return nil, 0, fmt.Errorf("http return code should be %d, but received %d", http.StatusOK, httpResponse.StatusCode)
-	}
-
-	contentType := httpResponse.Header.Get("content-type")
-	if contentType != dnsContentType {
-		return nil, 0, fmt.Errorf("http return content type should be '%s', but was '%s'",
-			dnsContentType, contentType)
-	}
-
-	body, err := ioutil.ReadAll(httpResponse.Body)
-	if err != nil {
-		return nil, 0, errors.New("can't read response body")
-	}
-
-	response := dns.Msg{}
-	err = response.Unpack(body)
-
-	if err != nil {
-		return nil, 0, errors.New("can't unpack message")
-	}
-
-	return &response, time.Since(start), nil
 }
 
 func resolvePrivate(request *Request, port int) (response *Response, err error) {
 	logger := withPrefix(request.Log, "private_resolver")
-	net := "http"
 	host := "10.255.0.1"
-	url := fmt.Sprintf("%s://%s:%d", net, host, port)
+	url := net.JoinHostPort(host, strconv.Itoa(port))
 
 	var rtt time.Duration
 	var resp *dns.Msg
