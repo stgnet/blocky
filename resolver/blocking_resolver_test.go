@@ -1,6 +1,9 @@
 package resolver
 
 import (
+	"fmt"
+	"testing"
+
 	"github.com/stgnet/blocky/api"
 	"github.com/stgnet/blocky/config"
 	. "github.com/stgnet/blocky/helpertest"
@@ -17,6 +20,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -636,3 +640,45 @@ badcnamedomain.com`)
 	})
 
 })
+
+func TestAdblock_Redirect_Block(t *testing.T) {
+	t.Skip("we don't have an upstream DNS server to query")
+	mockAnswer := new(dns.Msg)
+	defaultGroupFile := TempFile(
+		`blocked3.com
+123.145.123.145
+2001:db8:85a3:08d3::370:7344
+badcnamedomain.com`)
+
+	sutConfig := config.BlockingConfig{
+		BlackLists: map[string][]string{
+			"adblock": {defaultGroupFile.Name()},
+		},
+		ClientGroupsBlock: map[string][]string{
+			"1.2.1.2": {"adblock"},
+		},
+	}
+	sut := NewBlockingResolver(chi.NewRouter(), sutConfig).(*BlockingResolver)
+	m = &resolverMock{}
+	m.On("Resolve", mock.Anything).Return(&Response{Res: mockAnswer}, nil)
+	sut = NewBlockingResolver(chi.NewRouter(), sutConfig).(*BlockingResolver)
+	sut.Next(m)
+
+	sut.cfg.Global = map[string]bool{"adblock": true}
+	resp, err = sut.Resolve(newRequestWithClient("blocked3.com.", dns.TypeA, "1.2.1.2", "unknown"))
+	fmt.Println(err)
+	assert.Nil(t, err)
+	// was delegated to next resolver
+	assert.NotNil(t, resp)
+	assert.Contains(t, resp.Reason, "BLOCKED")
+
+	// Expect(resp.Res.Rcode).Should(Equal(dns.RcodeSuccess))
+	// Expect(resp.RType).Should(Equal(RESOLVED))
+	// Expect(resp.Res.Answer).Should(BeDNSRecord("example.com.", dns.TypeA, 123, "123.124.122.122"))
+	// b := BeDNSRecord("other.youtube.com.", dns.TypeA, 3600, "restrict.youtube.com.")
+	// ok, err := b.Match(resp.Res.Answer)
+	// Expect(resp.Reason).Should(Equal(fmt.Sprintf("RESOLVED (%s:%d)", upstream.Host, upstream.Port)))
+	// m.AssertExpectations(GinkgoT())
+	// m.AssertNumberOfCalls(GinkgoT(), "Resolve", 1)
+
+}

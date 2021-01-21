@@ -288,9 +288,12 @@ func (r *BlockingResolver) handleBlacklist(groupsToCheck []string,
 			return r.handleBlocked(logger, request, question, "BLOCKED (WHITELIST ONLY)")
 		}
 
-		if blocked, group := r.matches(groupsToCheck, r.blacklistMatcher, domain); blocked {
-			return r.handleBlocked(logger, request, question, fmt.Sprintf("BLOCKED (%s)", group))
-		}
+		port := r.getPort(groupsToCheck)
+		return resolvePrivate(request, port)
+
+		// if blocked, group := r.matches(groupsToCheck, r.blacklistMatcher, domain); blocked {
+		// 	return r.handleBlocked(logger, request, question, fmt.Sprintf("BLOCKED (%s)", group))
+		// }
 	}
 
 	return nil, nil
