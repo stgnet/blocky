@@ -10,7 +10,6 @@ import (
 
 	"github.com/miekg/dns"
 	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 	"github.com/stgnet/blocky/util"
 )
 
@@ -70,10 +69,6 @@ func (r *BlockingResolver) getPort(groupsToCheck []string) int {
 			toggles = append(toggles, v)
 		}
 	}
-
-	log.Info(r.cfg.Global)
-	log.Info(groupsToCheck)
-	log.Info(toggles)
 
 	values := map[string]int{"adblock": 1, "malware": 2, "adult": 4}
 	port := 1024
