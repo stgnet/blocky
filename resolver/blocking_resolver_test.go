@@ -596,7 +596,7 @@ badcnamedomain.com`)
 })
 
 func TestAdblock_Redirect_Block(t *testing.T) {
-	t.Skip("we don't have an upstream DNS server to query")
+	// t.Skip("we don't have an upstream DNS server to query")
 	mockAnswer := new(dns.Msg)
 	defaultGroupFile := TempFile(
 		`blocked3.com
@@ -609,7 +609,8 @@ badcnamedomain.com`)
 			"adblock": {defaultGroupFile.Name()},
 		},
 		ClientGroupsBlock: map[string][]string{
-			"1.2.1.2": {"adblock"},
+			"1.2.1.2": {"adblock", "malware"},
+			"1.2.1.3": {"adult"},
 		},
 	}
 	sut := NewBlockingResolver(chi.NewRouter(), sutConfig).(*BlockingResolver)
