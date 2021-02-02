@@ -56,27 +56,66 @@ func contains(domain string, cache []string) bool {
 }
 
 func (r *BlockingResolver) getPort(groupsToCheck []string) int {
-	toggles := []string{}
+	toggles := map[string]bool{"adblock": false, "malware": false, "adult": false}
+	uniqueGroups := buildGroupsMap(groupsToCheck)
 
 	for k, v := range r.cfg.Global {
-		if v {
-			toggles = append(toggles, k)
-		}
+		toggles[k] = v
 	}
 
-	for _, v := range groupsToCheck {
-		if !contains(v, toggles) {
-			toggles = append(toggles, v)
+	// Global State	| Device State	| Result for Device
+	// -----------------------------------------------
+	// OFF (False)	| ON (True)		| OFF |
+	// OFF (False)	| OFF (False)	| OFF |
+	// ON (True)	| ON (True)		| ON  |
+	// ON (True)	| OFF (False)	| OFF |
+
+	logger("getport").Warn("____")
+	logger("getport").Warn(groupsToCheck)
+	logger("getport").Warn(uniqueGroups)
+	logger("getport").Warn("____")
+	fmt.Println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+
+	for k, v := range toggles {
+		v2, _ := uniqueGroups[k]
+		// for everything except adblock we just set the values
+		if k != "adblock" {
+			toggles[k] = v2
+			continue
 		}
+
+		if v && v2 {
+			toggles[k] = true
+			continue
+		}
+		toggles[k] = false
+		continue
+
 	}
 
+	// calculate result
 	values := map[string]int{"adblock": 1, "malware": 2, "adult": 4}
 	port := 1024
-	for _, v := range toggles {
-		if i, ok := values[v]; ok {
-			port += i
+	for k, v := range toggles {
+		if v {
+			if i, ok := values[k]; ok {
+				port += i
+			}
 		}
 	}
+	if port > 1031 {
+		logger("private_resolver").Error("port returned a value greater than the maximum of 1031. Setting to 1024", port)
+		port = 1024
+	}
+
 	return port
 
+}
+func buildGroupsMap(slice []string) map[string]bool {
+	m := map[string]bool{}
+	for _, entry := range slice {
+		m[entry] = true
+	}
+
+	return m
 }

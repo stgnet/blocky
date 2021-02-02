@@ -5,27 +5,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/stgnet/blocky/config"
-	"github.com/stretchr/testify/assert"
 )
 
-func Test_GetPort(t *testing.T) {
-
-	sutConfig := config.BlockingConfig{
-		BlackLists: map[string][]string{
-			"adblock": {""},
-		},
-		ClientGroupsBlock: map[string][]string{
-			"1.2.1.2": {"malware"},
-		},
-		Global: map[string]bool{"adblock": true},
-	}
-	sut := NewBlockingResolver(chi.NewRouter(), sutConfig).(*BlockingResolver)
-
-	port := sut.getPort
-
-	assert.Equal(t, 1027, port)
-
-}
 func TestBlockingResolver_getPort(t *testing.T) {
 	type args struct {
 		groupsToCheck []string
@@ -37,7 +18,7 @@ func TestBlockingResolver_getPort(t *testing.T) {
 		want          int
 	}{
 		{
-			name: "malware and adblock",
+			name: "client malware true and adblock missing with global adblock true",
 			blockingCfg: config.BlockingConfig{
 				BlackLists: map[string][]string{
 					"adblock": {""},
@@ -48,10 +29,10 @@ func TestBlockingResolver_getPort(t *testing.T) {
 				Global: map[string]bool{"adblock": true},
 			},
 			groupsToCheck: []string{"malware"},
-			want:          1027,
+			want:          1026,
 		},
 		{
-			name: "duplicated block",
+			name: "global and client adblock true",
 			blockingCfg: config.BlockingConfig{
 				BlackLists: map[string][]string{
 					"adblock": {""},
@@ -65,74 +46,60 @@ func TestBlockingResolver_getPort(t *testing.T) {
 			want:          1025,
 		},
 		{
-			name: "no groups to check",
+			name: "global and client adblock true, adult client",
 			blockingCfg: config.BlockingConfig{
 				BlackLists: map[string][]string{
 					"adblock": {""},
 				},
 				ClientGroupsBlock: map[string][]string{
-					"1.2.1.2": {"adult"},
+					"1.2.1.2": {"adblock", "adult"},
 				},
-				Global: map[string]bool{"adult": true},
+				Global: map[string]bool{"adblock": true},
 			},
-			groupsToCheck: []string{""},
+			groupsToCheck: []string{"adblock", "adult"},
+			want:          1029,
+		},
+		{
+			name: "global adblock false, client true. Client adult",
+			blockingCfg: config.BlockingConfig{
+				BlackLists: map[string][]string{
+					"adblock": {""},
+				},
+				ClientGroupsBlock: map[string][]string{
+					"1.2.1.2": {"adblock", "adult"},
+				},
+				Global: map[string]bool{"adblock": false},
+			},
+			groupsToCheck: []string{"adblock", "adult"},
 			want:          1028,
 		},
 		{
-			name: "Multiple block from client",
+			name: "all enabled",
 			blockingCfg: config.BlockingConfig{
 				BlackLists: map[string][]string{
 					"adblock": {""},
 				},
 				ClientGroupsBlock: map[string][]string{
-					"1.2.1.2": {"adult", "malware"},
+					"1.2.1.2": {"adblock", "adult", "malware"},
 				},
-				Global: map[string]bool{"adult": true},
+				Global: map[string]bool{"adblock": true},
 			},
-			groupsToCheck: []string{"adult", "malware"},
-			want:          1030,
+			groupsToCheck: []string{"adblock", "adult", "malware"},
+			want:          1031,
 		},
 		{
-			name: "false global, gets picked up client",
+			name: "no client, global adblock true",
 			blockingCfg: config.BlockingConfig{
 				BlackLists: map[string][]string{
 					"adblock": {""},
 				},
 				ClientGroupsBlock: map[string][]string{
-					"1.2.1.2": {"adult", "malware"},
+					"1.2.1.2": {},
 				},
-				Global: map[string]bool{"adult": false},
+				Global: map[string]bool{"adblock": true},
 			},
-			groupsToCheck: []string{"adult", "malware"},
-			want:          1030,
-		},
-		{
-			name: "false global",
-			blockingCfg: config.BlockingConfig{
-				BlackLists: map[string][]string{
-					"adblock": {""},
-				},
-				ClientGroupsBlock: map[string][]string{
-					"1.2.1.2": {"adult", "malware"},
-				},
-				Global: map[string]bool{"adult": false},
-			},
-			groupsToCheck: []string{"malware"},
-			want:          1026,
-		},
-		{
-			name: "mixed global, empty group",
-			blockingCfg: config.BlockingConfig{
-				BlackLists: map[string][]string{
-					"adblock": {""},
-				},
-				ClientGroupsBlock: map[string][]string{
-					"1.2.1.2": {"adult", "malware"},
-				},
-				Global: map[string]bool{"adult": false, "malware": true},
-			},
-			groupsToCheck: []string{""},
-			want:          1026,
+			groupsToCheck: []string{},
+			want:          1024,
 		},
 	}
 	for _, tt := range tests {
