@@ -354,6 +354,10 @@ func (r *BlockingResolver) groupsToCheckForClient(request *Request) (groups []st
 			groups = append(groups, groupsByName...)
 		}
 	}
+	logger("groups_to_check").Warn("++++")
+	logger("groups_to_check").Warn(request.ClientNames)
+	logger("groups_to_check").Warn(groups)
+	logger("groups_to_check").Warn("++++")
 
 	// try IP
 	groupsByIP, found := r.cfg.ClientGroupsBlock[request.ClientIP.String()]
@@ -361,6 +365,9 @@ func (r *BlockingResolver) groupsToCheckForClient(request *Request) (groups []st
 	if found {
 		groups = append(groups, groupsByIP...)
 	}
+	logger("groups_to_check").Warn("++++")
+	logger("groups_to_check").Warn(request.ClientIP.String())
+	logger("groups_to_check").Warn("++++")
 
 	if len(groups) == 0 {
 		if !found {
