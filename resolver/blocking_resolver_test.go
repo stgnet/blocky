@@ -609,7 +609,8 @@ badcnamedomain.com`)
 			"adblock": {defaultGroupFile.Name()},
 		},
 		ClientGroupsBlock: map[string][]string{
-			"1.2.1.2": {"adblock"},
+			"1.2.1.2": {"adblock", "malware"},
+			"1.2.1.3": {"adult"},
 		},
 	}
 	sut := NewBlockingResolver(chi.NewRouter(), sutConfig).(*BlockingResolver)
