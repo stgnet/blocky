@@ -17,7 +17,7 @@ func callExternal(msg *dns.Msg, upstreamURL string) (*dns.Msg, time.Duration, er
 
 	dnsClient := &dnsUpstreamClient{
 		client: &dns.Client{
-			Net:     "udp",
+			Net:     "tcp",
 			Timeout: defaultTimeout,
 		},
 	}
