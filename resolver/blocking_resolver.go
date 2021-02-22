@@ -348,6 +348,7 @@ func extractEntryToCheckFromResponse(rr dns.RR) (entryToCheck string, tName stri
 // returns groups which should be checked for client's request
 func (r *BlockingResolver) groupsToCheckForClient(request *Request) (groups []string) {
 	// try client names
+	logger("groups_to_check").Warnf("clientNames: %v, ip: %s, cfgBlock: %v", request.ClientNames, request.ClientIP.String(), r.cfg.ClientGroupsBlock)
 	for _, cName := range request.ClientNames {
 		groupsByName, found := r.cfg.ClientGroupsBlock[cName]
 		if found {

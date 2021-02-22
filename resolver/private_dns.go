@@ -58,11 +58,11 @@ func contains(domain string, cache []string) bool {
 func (r *BlockingResolver) getPort(groupsToCheck []string) int {
 	toggles := map[string]bool{"adblock": false, "malware": false, "adult": false}
 	uniqueGroups := buildGroupsMap(groupsToCheck)
-
 	for k, v := range r.cfg.Global {
 		toggles[k] = v
 	}
 
+	logger("private_resolver").Infof("!*** global: %v, toggles: %v, groupsToCheck: %v ***!", r.cfg.Global, toggles, uniqueGroups)
 	// Global State	| Device State	| Result for Device
 	// -----------------------------------------------
 	// OFF (False)	| ON (True)		| OFF |
@@ -82,6 +82,7 @@ func (r *BlockingResolver) getPort(groupsToCheck []string) int {
 
 	}
 
+	logger("private_resolver").Infof("*** after compare %v ***", toggles)
 	// calculate result
 	values := map[string]int{"adblock": 1, "malware": 2, "adult": 4}
 	port := 1024
