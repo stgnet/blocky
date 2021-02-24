@@ -348,6 +348,20 @@ func extractEntryToCheckFromResponse(rr dns.RR) (entryToCheck string, tName stri
 // returns groups which should be checked for client's request
 func (r *BlockingResolver) groupsToCheckForClient(request *Request) (groups []string) {
 	// try client names
+	opt := request.Req.IsEdns0()
+	if opt != nil {
+		data := (opt.Option[0].(*dns.EDNS0_LOCAL)).Data
+		macStr := net.HardwareAddr(data).String()
+
+		groupsByMAC, found := r.cfg.ClientGroupsBlock[macStr]
+
+		if found {
+			groups = append(groups, groupsByMAC...)
+		}
+
+		logger("groups_to_check").Debugf("macstr: %s, groups: %v", macStr, groups)
+	}
+
 	for _, cName := range request.ClientNames {
 		groupsByName, found := r.cfg.ClientGroupsBlock[cName]
 		if found {

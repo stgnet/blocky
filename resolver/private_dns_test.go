@@ -46,6 +46,30 @@ func TestBlockingResolver_getPort(t *testing.T) {
 			want:          1025,
 		},
 		{
+			// INFO      clientGroupsBlock                        prefix=server
+			// INFO        192.168.176.116 = "adult"              prefix=server
+			// INFO        192.168.176.185 = "adult"              prefix=server
+			// INFO        192.168.176.245 = "adult"              prefix=server
+			// INFO        default = "adblock"                    prefix=server
+			// INFO      global:                                  prefix=server
+			// INFO        adblock = "true"                       prefix=server
+			// INFO        adult = "true"                         prefix=server
+			// INFO        malware = "false"                      prefix=server
+
+			name: "global and client adblock adult true",
+			blockingCfg: config.BlockingConfig{
+				BlackLists: map[string][]string{
+					"adblock": {""},
+				},
+				ClientGroupsBlock: map[string][]string{
+					"1.2.1.2": {"adult"},
+				},
+				Global: map[string]bool{"adblock": true, "adult": true},
+			},
+			groupsToCheck: []string{"adult"},
+			want:          1028,
+		},
+		{
 			name: "global and client adblock true, adult client",
 			blockingCfg: config.BlockingConfig{
 				BlackLists: map[string][]string{
