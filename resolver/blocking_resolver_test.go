@@ -1,7 +1,6 @@
 package resolver
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stgnet/blocky/api"
@@ -642,7 +641,7 @@ badcnamedomain.com`)
 })
 
 func TestAdblock_Redirect_Block(t *testing.T) {
-	t.Skip("we don't have an upstream DNS server to query")
+	// t.Skip("we don't have an upstream DNS server to query")
 	mockAnswer := new(dns.Msg)
 	defaultGroupFile := TempFile(
 		`blocked3.com
@@ -655,7 +654,7 @@ badcnamedomain.com`)
 			"adblock": {defaultGroupFile.Name()},
 		},
 		ClientGroupsBlock: map[string][]string{
-			"1.2.1.2": {"adblock", "malware"},
+			"1.2.1.2": {"adult", "malware"},
 			"1.2.1.3": {"adult"},
 		},
 	}
@@ -665,12 +664,12 @@ badcnamedomain.com`)
 	sut = NewBlockingResolver(chi.NewRouter(), sutConfig).(*BlockingResolver)
 	sut.Next(m)
 
-	sut.cfg.Global = map[string]bool{"adblock": true}
+	sut.cfg.Global = map[string]bool{"adblock": false, "adult": true, "malware": true}
 	resp, err = sut.Resolve(newRequestWithClient("blocked3.com.", dns.TypeA, "1.2.1.2", "unknown"))
-	fmt.Println(err)
 	assert.Nil(t, err)
 	// was delegated to next resolver
 	assert.NotNil(t, resp)
+	t.Log(resp.Res.Answer)
 	assert.Contains(t, resp.Reason, "BLOCKED")
 
 	// Expect(resp.Res.Rcode).Should(Equal(dns.RcodeSuccess))
