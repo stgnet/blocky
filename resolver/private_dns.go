@@ -110,14 +110,14 @@ func buildGroupsMap(slice []string) map[string]bool {
 	return m
 }
 
-func getEdnsData(request *Request, cfg map[string][]string, groups []string) {
+func getEdnsData(request *Request, cfg map[string][]string, groups *[]string) {
 	opt := request.Req.IsEdns0()
 	if opt != nil {
 		data := (opt.Option[0].(*dns.EDNS0_LOCAL)).Data
 		macStr := net.HardwareAddr(data).String()
 		groupsByName, found := cfg[macStr]
 		if found {
-			groups = append(groups, groupsByName...)
+			*groups = append(*groups, groupsByName...)
 		}
 
 		logger("groups_to_check").Debugf("macstr: %s, groups: %v", macStr, groups)
