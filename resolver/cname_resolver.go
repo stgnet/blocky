@@ -84,10 +84,7 @@ func (cr *CnameResolver) Resolve(req *Request) (*Response, error) {
 
 func (cr *CnameResolver) groupsToCheckForClient(request *Request) (groups []string) {
 	// try client names
-	groupsByName, found := cr.cfg.ClientGroupsBlock[request.ClientIP.String()]
-	if found {
-		groups = append(groups, groupsByName...)
-	}
+	getEdnsData(request, cr.cfg.ClientGroupsBlock, groups)
 
 	if len(groups) == 0 {
 		groups = cr.cfg.ClientGroupsBlock["default"]
