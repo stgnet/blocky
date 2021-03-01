@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -205,10 +206,19 @@ func createCsvWriter(file io.Writer) *csv.Writer {
 func createQueryLogRow(logEntry *queryLogEntry) []string {
 	request := logEntry.request
 	response := logEntry.response
+	clientID := request.ClientIP.String()
+
+	if request.ClientIP.String() == "127.0.0.1" {
+		opt := request.Req.IsEdns0()
+		if opt != nil {
+			data := (opt.Option[0].(*dns.EDNS0_LOCAL)).Data
+			clientID = net.HardwareAddr(data).String()
+		}
+	}
 
 	return []string{
 		logEntry.start.Format("2006-01-02 15:04:05"),
-		request.ClientIP.String(),
+		clientID,
 		strings.Join(request.ClientNames, "; "),
 		fmt.Sprintf("%d", logEntry.durationMs),
 		response.Reason,
