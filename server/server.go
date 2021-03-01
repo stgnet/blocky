@@ -133,10 +133,10 @@ func createQueryResolver(cfg *config.Config, router *chi.Mux) resolver.Resolver 
 		resolver.NewMetricsResolver(cfg.Prometheus),
 		resolver.NewConditionalUpstreamResolver(cfg.Conditional),
 		resolver.NewCustomDNSResolver(cfg.CustomDNS),
+		resolver.NewCnameResolver(cfg.Cname),
 		resolver.NewBlockingResolver(router, cfg.Blocking),
 		resolver.NewCachingResolver(cfg.Caching),
 		resolver.NewParallelBestResolver(cfg.Upstream.ExternalResolvers),
-		resolver.NewCnameResolver(cfg.Cname),
 		resolver.NewParallelBestResolver(cfg.Upstream),
 	)
 }
