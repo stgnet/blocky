@@ -25,13 +25,14 @@ func callExternal(msg *dns.Msg, upstreamURL string) (*dns.Msg, time.Duration, er
 
 }
 
-func resolvePrivate(request *Request, port int) (response *Response, err error) {
+func resolvePrivate(request *Request, port int) (*dns.Msg, error) {
 	logger := withPrefix(request.Log, "private_resolver")
 	host := "10.255.0.1"
 	url := net.JoinHostPort(host, strconv.Itoa(port))
 
 	var rtt time.Duration
 	var resp *dns.Msg
+	var err error
 	if resp, rtt, err = callExternal(request.Req, url); err == nil {
 		logger.WithFields(logrus.Fields{
 			"answer":           util.AnswerToString(resp.Answer),
@@ -40,7 +41,7 @@ func resolvePrivate(request *Request, port int) (response *Response, err error) 
 			"response_time_ms": rtt.Milliseconds(),
 		}).Debugf("received response from private dns")
 
-		return &Response{Res: resp, Reason: fmt.Sprintf("RESOLVED (%s)", url)}, err
+		return resp, nil
 	}
 
 	return nil, fmt.Errorf("could not resolve using private dns %w", err)
