@@ -1,12 +1,14 @@
 package cmd
 
 import (
-	"github.com/stgnet/blocky/api"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/stgnet/blocky/api"
+
+	"github.com/stgnet/blocky/log"
+
 	"github.com/spf13/cobra"
 )
 
@@ -50,15 +52,15 @@ var blockingCmd = &cobra.Command{
 func enableBlocking(_ *cobra.Command, _ []string) {
 	resp, err := http.Get(apiURL(api.BlockingEnablePath))
 	if err != nil {
-		log.Fatal("can't execute", err)
+		log.Logger.Fatal("can't execute", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
-		log.Info("OK")
+		log.Logger.Info("OK")
 	} else {
-		log.Fatal("NOK: ", resp.Status)
+		log.Logger.Fatal("NOK: ", resp.Status)
 	}
 }
 
@@ -67,28 +69,28 @@ func disableBlocking(cmd *cobra.Command, _ []string) {
 
 	resp, err := http.Get(fmt.Sprintf("%s?duration=%s", apiURL(api.BlockingDisablePath), duration))
 	if err != nil {
-		log.Fatal("can't execute", err)
+		log.Logger.Fatal("can't execute", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusOK {
-		log.Info("OK")
+		log.Logger.Info("OK")
 	} else {
-		log.Fatal("NOK: ", resp.Status)
+		log.Logger.Fatal("NOK: ", resp.Status)
 	}
 }
 
 func statusBlocking(_ *cobra.Command, _ []string) {
 	resp, err := http.Get(apiURL(api.BlockingStatusPath))
 	if err != nil {
-		log.Fatal("can't execute", err)
+		log.Logger.Fatal("can't execute", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatal("NOK: ", resp.Status)
+		log.Logger.Fatal("NOK: ", resp.Status)
 		return
 	}
 
@@ -96,16 +98,16 @@ func statusBlocking(_ *cobra.Command, _ []string) {
 	err = json.NewDecoder(resp.Body).Decode(&result)
 
 	if err != nil {
-		log.Fatal("can't read response: ", err)
+		log.Logger.Fatal("can't read response: ", err)
 	}
 
 	if result.Enabled {
-		log.Info("blocking enabled")
+		log.Logger.Info("blocking enabled")
 	} else {
 		if result.AutoEnableInSec == 0 {
-			log.Info("blocking disabled")
+			log.Logger.Info("blocking disabled")
 		} else {
-			log.Infof("blocking disabled for %d seconds", result.AutoEnableInSec)
+			log.Logger.Infof("blocking disabled for %d seconds", result.AutoEnableInSec)
 		}
 	}
 }

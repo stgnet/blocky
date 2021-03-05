@@ -1,6 +1,7 @@
 package resolver
 
 import (
+	"github.com/stgnet/blocky/log"
 	"fmt"
 	"net"
 	"strings"
@@ -87,7 +88,7 @@ func (r *NextResolver) GetNext() Resolver {
 }
 
 func logger(prefix string) *logrus.Entry {
-	return logrus.WithField("prefix", prefix)
+	return log.Logger.WithField("prefix", prefix)
 }
 
 func withPrefix(logger *logrus.Entry, prefix string) *logrus.Entry {
