@@ -3,7 +3,6 @@ package lists
 import (
 	"bufio"
 	"fmt"
-	"github.com/stgnet/blocky/metrics"
 	"io"
 	"net"
 	"net/http"
@@ -13,7 +12,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/stgnet/blocky/log"
+	"github.com/stgnet/blocky/metrics"
+
 	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -134,7 +137,7 @@ func periodicUpdate(cache *ListCache) {
 }
 
 func logger() *logrus.Entry {
-	return logrus.WithField("prefix", "list_cache")
+	return log.Logger.WithField("prefix", "list_cache")
 }
 
 // downloads and reads files with domain names and creates cache for them

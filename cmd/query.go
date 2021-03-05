@@ -1,16 +1,17 @@
 package cmd
 
 import (
-	"github.com/stgnet/blocky/api"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/stgnet/blocky/api"
+
+	"github.com/stgnet/blocky/log"
+
 	"github.com/miekg/dns"
 	"github.com/spf13/cobra"
-
-	log "github.com/sirupsen/logrus"
 )
 
 //nolint:gochecknoinits
@@ -32,7 +33,7 @@ func query(cmd *cobra.Command, args []string) {
 	qType := dns.StringToType[typeFlag]
 
 	if qType == dns.TypeNone {
-		log.Fatalf("unknown query type '%s'", typeFlag)
+		log.Logger.Fatalf("unknown query type '%s'", typeFlag)
 	}
 
 	apiRequest := api.QueryRequest{
@@ -44,7 +45,7 @@ func query(cmd *cobra.Command, args []string) {
 	resp, err := http.Post(apiURL(api.BlockingQueryPath), "application/json", bytes.NewBuffer(jsonValue))
 
 	if err != nil {
-		log.Fatal("can't execute", err)
+		log.Logger.Fatal("can't execute", err)
 
 		return
 	}
@@ -52,7 +53,7 @@ func query(cmd *cobra.Command, args []string) {
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		log.Fatalf("NOK: %s %s", resp.Status, string(body))
+		log.Logger.Fatalf("NOK: %s %s", resp.Status, string(body))
 
 		return
 	}
@@ -61,14 +62,14 @@ func query(cmd *cobra.Command, args []string) {
 	err = json.NewDecoder(resp.Body).Decode(&result)
 
 	if err != nil {
-		log.Fatal("can't read response: ", err)
+		log.Logger.Fatal("can't read response: ", err)
 
 		return
 	}
 
-	log.Infof("Query result for '%s' (%s):", apiRequest.Query, apiRequest.Type)
-	log.Infof("\treason:        %20s", result.Reason)
-	log.Infof("\tresponse type: %20s", result.ResponseType)
-	log.Infof("\tresponse:      %20s", result.Response)
-	log.Infof("\treturn code:   %20s", result.ReturnCode)
+	log.Logger.Infof("Query result for '%s' (%s):", apiRequest.Query, apiRequest.Type)
+	log.Logger.Infof("\treason:        %20s", result.Reason)
+	log.Logger.Infof("\tresponse type: %20s", result.ResponseType)
+	log.Logger.Infof("\tresponse:      %20s", result.Response)
+	log.Logger.Infof("\treturn code:   %20s", result.ReturnCode)
 }

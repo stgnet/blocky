@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/stgnet/blocky/log"
 	"net/http"
 	"runtime"
 	"runtime/debug"
@@ -31,7 +32,7 @@ type Server struct {
 }
 
 func logger() *logrus.Entry {
-	return logrus.WithField("prefix", "server")
+	return log.Logger.WithField("prefix", "server")
 }
 
 func NewServer(cfg *config.Config) (server *Server, err error) {
@@ -54,12 +55,7 @@ func NewServer(cfg *config.Config) (server *Server, err error) {
 
 	var httpListener, httpsListener net.Listener
 
-	if level, err := logrus.ParseLevel(cfg.LogLevel); err != nil {
-		logrus.Fatalf("invalid log level %s %v", cfg.LogLevel, err)
-	} else {
-		logrus.SetLevel(level)
-	}
-
+	log.NewLogger(cfg.LogLevel, cfg.LogFormat)
 	router := createRouter(cfg)
 
 	if cfg.HTTPPort > 0 {
@@ -229,7 +225,7 @@ func newRequest(clientIP net.IP, request *dns.Msg) *resolver.Request {
 		ClientIP:  clientIP,
 		Req:       request,
 		RequestTS: time.Now(),
-		Log: logrus.WithFields(logrus.Fields{
+		Log: log.Logger.WithFields(logrus.Fields{
 			"question":  util.QuestionToString(request.Question),
 			"client_ip": clientIP,
 		}),

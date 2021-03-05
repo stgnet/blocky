@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/stgnet/blocky/log"
 
 	"gopkg.in/yaml.v2"
 )
@@ -120,6 +120,7 @@ type Config struct {
 	Caching      CachingConfig             `yaml:"caching"`
 	QueryLog     QueryLogConfig            `yaml:"queryLog"`
 	Prometheus   PrometheusConfig          `yaml:"prometheus"`
+	LogFormat    string                    `yaml:"logFormat"`
 	LogLevel     string                    `yaml:"logLevel"`
 	Port         uint16                    `yaml:"port"`
 	HTTPPort     uint16                    `yaml:"httpPort"`
@@ -190,12 +191,15 @@ func NewConfig(path string) Config {
 	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		log.Fatal("Can't read config file: ", err)
+		log.Logger.Fatal("Can't read config file: ", err)
 	}
 
 	err = yaml.UnmarshalStrict(data, &cfg)
 	if err != nil {
-		log.Fatal("wrong file structure: ", err)
+		log.Logger.Fatal("wrong file structure: ", err)
+	}
+	if cfg.LogFormat != log.CfgLogFormatText && cfg.LogFormat != log.CfgLogFormatJSON {
+		log.Logger.Fatal("LogFormat should be 'text' or 'json'")
 	}
 
 	return cfg
@@ -204,5 +208,6 @@ func NewConfig(path string) Config {
 func setDefaultValues(cfg *Config) {
 	cfg.Port = cfgDefaultPort
 	cfg.LogLevel = "info"
+	cfg.LogFormat = log.CfgLogFormatText
 	cfg.Prometheus.Path = cfgDefaultPrometheusPath
 }

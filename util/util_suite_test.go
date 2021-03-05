@@ -1,4 +1,4 @@
-package lists
+package util
 
 import (
 	"github.com/stgnet/blocky/log"
@@ -11,5 +11,5 @@ import (
 func TestLists(t *testing.T) {
 	log.NewLogger("Warn", "text")
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Lists Suite")
+	RunSpecs(t, "Util Suite")
 }
